@@ -29,7 +29,7 @@ export class AMQPConnector {
     if (this.connected) return this;
     this.connection = await connect(this.options);
     this.channel = await this.connection.openChannel();
-    this.channel.declareQueue({ queue: this.options.queue });
+    this.channel.declareQueue({ queue: this.options.queue, durable: true });
     this.connected = true;
     return this;
   }
