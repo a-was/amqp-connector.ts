@@ -5,7 +5,7 @@ import {
   AmqpChannel,
 } from "https://deno.land/x/amqp/mod.ts";
 
-interface AMQPConnectionOptions extends AmqpConnectOptions {
+export interface AMQPConnectionOptions extends AmqpConnectOptions {
   queue: string;
 }
 
