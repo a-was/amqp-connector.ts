@@ -2,8 +2,8 @@
 
 ## Description
 
-Easy in use class for making AMQP connections in [deno](https://deno.land)
-
+Easy in use class for making AMQP connections in [deno](https://deno.land)  
+You need to add `--allow-net` flag for this to work  
 Dependences: [amqp](https://deno.land/x/amqp)
 
 ## Usage
