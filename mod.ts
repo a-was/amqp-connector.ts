@@ -12,29 +12,30 @@ interface AMQPConnectionOptions extends AmqpConnectOptions {
 export class AMQPConnector {
   private connection!: AmqpConnection;
   private channel!: AmqpChannel;
-  private connected = false;
   private options: AMQPConnectionOptions;
+  private connected: boolean = false;
 
   constructor(options: AMQPConnectionOptions) {
     this.options = options;
   }
 
   private checkConnected(): void {
-    if (this.connected == false) {
-      throw "You need to connect first. Use connect() function";
+    if (this.connected === false) {
+      throw new Error("You need to connect first. Use connect() function");
     }
   }
 
-  async connect() {
-    if (this.connected) return this;
-    this.connection = await connect(this.options);
-    this.channel = await this.connection.openChannel();
-    this.channel.declareQueue({ queue: this.options.queue, durable: true });
-    this.connected = true;
+  async connect(): Promise<AMQPConnector> {
+    if (this.connected === false) {
+      this.connection = await connect(this.options);
+      this.channel = await this.connection.openChannel();
+      this.channel.declareQueue({ queue: this.options.queue, durable: true });
+      this.connected = true;
+    }
     return this;
   }
 
-  async send(msg: string) {
+  async send(msg: string): Promise<void> {
     this.checkConnected();
     await this.channel.publish(
       { routingKey: this.options.queue },
@@ -43,7 +44,7 @@ export class AMQPConnector {
     );
   }
 
-  async receive(callback: (msg: string) => void) {
+  async receive(callback: (msg: string) => void): Promise<void> {
     this.checkConnected();
     await this.channel.consume(
       { queue: this.options.queue, noAck: false },
@@ -53,7 +54,7 @@ export class AMQPConnector {
       },
     );
   }
-  async close() {
+  async close(): Promise<void> {
     await this.channel.close();
     await this.connection.close();
   }
